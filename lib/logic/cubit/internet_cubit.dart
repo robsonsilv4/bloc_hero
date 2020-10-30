@@ -14,7 +14,12 @@ class InternetCubit extends Cubit<InternetState> {
   StreamSubscription connectivityStreamSubscription;
 
   InternetCubit({@required this.connectivity}) : super(InternetLoading()) {
-    connectivityStreamSubscription = connectivity.onConnectivityChanged.listen(
+    monitorInternetConnection();
+  }
+
+  StreamSubscription<ConnectivityResult> monitorInternetConnection() {
+    return connectivityStreamSubscription =
+        connectivity.onConnectivityChanged.listen(
       (connectivityResult) {
         if (connectivityResult == ConnectivityResult.wifi) {
           emitInternetConnected(ConnectionType.Wifi);
