@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../constants/enums.dart';
 import '../../logic/cubit/counter_cubit.dart';
+import '../../logic/cubit/internet_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({
@@ -28,8 +30,37 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            BlocBuilder<InternetCubit, InternetState>(
+              builder: (context, state) {
+                if (state is InternetConnected &&
+                    state.connectionType == ConnectionType.Wifi) {
+                  return Text(
+                    'Wi-Fi',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline3
+                        .copyWith(color: Colors.green),
+                  );
+                } else if (state is InternetConnected &&
+                    state.connectionType == ConnectionType.Mobile) {
+                  return Text(
+                    'Mobile',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline3
+                        .copyWith(color: Colors.red),
+                  );
+                } else if (state is InternetDisconnected) {
+                  return Text(
+                    'Disconnected',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline3
+                        .copyWith(color: Colors.grey),
+                  );
+                }
+                return CircularProgressIndicator();
+              },
             ),
             BlocConsumer<CounterCubit, CounterState>(
               listener: (context, state) {
@@ -72,28 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
               },
-            ),
-            SizedBox(height: 24.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'home_decrement_button',
-                  tooltip: 'Decrement',
-                  child: Icon(Icons.remove),
-                  onPressed: () {
-                    BlocProvider.of<CounterCubit>(context).decrement();
-                  },
-                ),
-                FloatingActionButton(
-                  heroTag: 'home_increment_button',
-                  tooltip: 'Increment',
-                  child: Icon(Icons.add),
-                  onPressed: () {
-                    BlocProvider.of<CounterCubit>(context).increment();
-                  },
-                ),
-              ],
             ),
             SizedBox(height: 24),
             MaterialButton(
